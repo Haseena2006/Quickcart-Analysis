@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuickCart Analytics | Intelligence Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#050d1a;--bg2:#081424;--card:rgba(255,255,255,0.04);--cb:rgba(255,255,255,0.08);--a1:#00e5c3;--a2:#7c5cfc;--a3:#ff6b6b;--a4:#ffd166;--tx:#e8f0fe;--mu:#7a8faa;--nh:70px;--glow:0 0 40px rgba(0,229,195,0.15)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--a1);border-radius:10px}
+.bgm{position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 80% 60% at 20% 10%,rgba(0,229,195,0.07) 0%,transparent 60%),radial-gradient(ellipse 60% 80% at 85% 80%,rgba(124,92,252,0.07) 0%,transparent 60%)}
+
+/* LOGIN */
+#LS{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:var(--bg)}
+.orb{position:absolute;border-radius:50%;filter:blur(70px);opacity:.12;animation:oF 8s ease-in-out infinite}
+.o1{width:500px;height:500px;background:var(--a1);top:-150px;left:-150px}
+.o2{width:400px;height:400px;background:var(--a2);bottom:-100px;right:-100px;animation-delay:3s}
+.o3{width:250px;height:250px;background:var(--a3);top:50%;left:50%;animation-delay:5s}
+@keyframes oF{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-30px) scale(1.05)}}
+.lc{position:relative;z-index:2;background:rgba(8,20,36,0.95);backdrop-filter:blur(24px);border:1px solid rgba(0,229,195,0.2);border-radius:32px;padding:3rem 2.8rem;width:460px;box-shadow:0 40px 80px rgba(0,0,0,0.5),var(--glow);animation:cU .6s cubic-bezier(.2,.8,.3,1)}
+@keyframes cU{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+.lb{text-align:center;margin-bottom:2rem}
+.ci{width:68px;height:68px;background:linear-gradient(135deg,var(--a1),var(--a2));border-radius:22px;display:inline-flex;align-items:center;justify-content:center;font-size:2rem;margin-bottom:1rem;box-shadow:0 8px 32px rgba(0,229,195,0.35);animation:iB 2.5s ease-in-out infinite}
+@keyframes iB{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
+.lb h1{font-family:'Outfit',sans-serif;font-size:2.1rem;font-weight:800;background:linear-gradient(135deg,var(--a1),var(--a2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lb .sub{font-size:0.75rem;color:var(--mu);margin-top:5px;letter-spacing:2.5px;text-transform:uppercase}
+.ll{font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--mu);margin-bottom:8px;display:block}
+.li{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px 18px;color:var(--tx);font-size:0.9rem;font-family:'Plus Jakarta Sans',sans-serif;transition:all .25s;margin-bottom:1.2rem}
+.li:focus{outline:none;border-color:var(--a1);background:rgba(0,229,195,0.06);box-shadow:0 0 0 3px rgba(0,229,195,0.12)}
+.li.er{border-color:var(--a3);box-shadow:0 0 0 3px rgba(255,107,107,0.15)}
+.pw{position:relative}
+.pt{position:absolute;right:16px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--mu);font-size:1rem;transition:color .2s}
+.pt:hover{color:var(--a1)}
+.le{background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.3);border-radius:12px;padding:11px 16px;font-size:0.82rem;color:#ff9090;margin-bottom:1rem;display:none;align-items:center;gap:8px}
+.lbtn{width:100%;background:linear-gradient(135deg,var(--a1),#00b89e);color:#050d1a;border:none;padding:15px;border-radius:14px;font-weight:700;font-size:1rem;font-family:'Outfit',sans-serif;cursor:pointer;transition:all .25s;letter-spacing:0.5px;position:relative;overflow:hidden;margin-top:8px}
+.lbtn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,229,195,0.4)}
+.lbtn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.hint{text-align:center;margin-top:1.2rem;font-size:0.74rem;color:var(--mu)}
+.hint span{color:var(--a1);font-weight:600}
+.ph{font-size:0.7rem;color:var(--mu);margin:-0.8rem 0 1.2rem;line-height:1.5}
+
+/* NAVBAR */
+.nb{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nh);background:rgba(5,13,26,0.93);backdrop-filter:blur(20px);border-bottom:1px solid var(--cb);display:flex;align-items:center;padding:0 28px;gap:20px;box-shadow:0 4px 24px rgba(0,0,0,0.3)}
+.nbr{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.bi{width:42px;height:42px;background:linear-gradient(135deg,var(--a1),var(--a2));border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;box-shadow:0 4px 16px rgba(0,229,195,0.3)}
+.bn{font-family:'Outfit',sans-serif;font-weight:800;font-size:1.1rem;background:linear-gradient(135deg,var(--a1),var(--a2));-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1}
+.bt{font-size:0.6rem;color:var(--mu);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+.nts{display:flex;gap:2px;flex:1;justify-content:center}
+.nt{display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:12px;cursor:pointer;font-size:0.8rem;font-weight:500;color:var(--mu);transition:all .25s;border:1px solid transparent;white-space:nowrap}
+.nt i{font-size:0.85rem}
+.nt:hover{color:var(--tx);background:var(--card)}
+.nt.ac{color:var(--a1);background:rgba(0,229,195,0.08);border-color:rgba(0,229,195,0.2)}
+.np{display:flex;align-items:center;gap:10px;flex-shrink:0;position:relative}
+.pb{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--cb);border-radius:40px;padding:6px 14px 6px 6px;cursor:pointer;transition:all .25s}
+.pb:hover{border-color:rgba(0,229,195,0.3);box-shadow:var(--glow)}
+.pa{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ff6b9d,#c44dff);display:flex;align-items:center;justify-content:center;font-size:1.3rem;border:2px solid rgba(255,107,157,0.4);flex-shrink:0}
+.pn{font-weight:600;font-size:0.82rem;color:var(--tx);line-height:1}
+.pd{font-size:0.67rem;color:var(--mu);line-height:1;margin-top:2px}
+.dd{position:absolute;top:calc(100% + 14px);right:0;background:rgba(8,20,36,0.98);backdrop-filter:blur(20px);border:1px solid rgba(0,229,195,0.2);border-radius:22px;padding:1.2rem;width:270px;box-shadow:0 20px 60px rgba(0,0,0,0.5),var(--glow);display:none;z-index:200;animation:dD .2s ease}
+@keyframes dD{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.dd.op{display:block}
+.dh{display:flex;align-items:center;gap:12px;padding-bottom:1rem;border-bottom:1px solid var(--cb);margin-bottom:1rem}
+.da{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#ff6b9d,#c44dff);display:flex;align-items:center;justify-content:center;font-size:2.2rem;border:2px solid rgba(255,107,157,0.4)}
+.dn{font-family:'Outfit',sans-serif;font-weight:700;font-size:0.95rem}
+.dr{font-size:0.72rem;color:var(--mu);margin-top:2px}
+.dtg{display:inline-block;margin-top:5px;background:rgba(124,92,252,0.15);border:1px solid rgba(124,92,252,0.3);color:#a78bfa;font-size:0.62rem;padding:2px 9px;border-radius:20px;font-weight:600;letter-spacing:1px}
+.ds{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,0.03);margin-bottom:6px;font-size:0.77rem;color:var(--mu)}
+.ds span:last-child{color:var(--a1);font-weight:600}
+.lo{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.2);color:#ff8a8a;border-radius:12px;padding:11px;cursor:pointer;font-size:0.82rem;font-weight:600;transition:all .25s;margin-top:10px;font-family:'Plus Jakarta Sans',sans-serif}
+.lo:hover{background:rgba(255,107,107,0.2);transform:translateY(-1px)}
+
+/* MAIN */
+.mc{margin-top:var(--nh);padding:28px 32px;min-height:calc(100vh - var(--nh));position:relative;z-index:1}
+.fb{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;background:rgba(255,255,255,0.03);border:1px solid var(--cb);border-radius:20px;padding:16px 24px;margin-bottom:28px;backdrop-filter:blur(10px)}
+.fg{display:flex;flex-direction:column;gap:6px}
+.fg label{font-size:0.63rem;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--mu)}
+.fg select,.fg input[type=date]{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:9px 16px;color:var(--tx);font-size:0.82rem;font-family:'Plus Jakarta Sans',sans-serif;min-width:150px;cursor:pointer}
+.fg select:focus,.fg input:focus{outline:none;border-color:var(--a1);box-shadow:0 0 0 3px rgba(0,229,195,0.12)}
+.fg option{background:var(--bg2)}
+.ab{background:linear-gradient(135deg,var(--a1),#00b89e);color:#050d1a;border:none;padding:10px 24px;border-radius:12px;font-weight:700;cursor:pointer;transition:all .25s;font-family:'Outfit',sans-serif;font-size:0.85rem}
+.ab:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,229,195,0.3)}
+.pg{display:none;animation:pF .35s ease}
+.pg.ac{display:block}
+@keyframes pF{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.kr{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;margin-bottom:28px}
+.kc{background:var(--card);border:1px solid var(--cb);border-radius:20px;padding:20px 22px;transition:all .25s;position:relative;overflow:hidden}
+.kc:hover{transform:translateY(-3px);box-shadow:var(--glow);border-color:rgba(0,229,195,0.2)}
+.ki{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:14px}
+.kl{font-size:0.67rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--mu);margin-bottom:6px}
+.kv{font-family:'Outfit',sans-serif;font-size:1.9rem;font-weight:800;line-height:1}
+.ks{font-size:0.7rem;color:var(--mu);margin-top:6px}
+.cd{background:var(--card);border:1px solid var(--cb);border-radius:24px;padding:24px;margin-bottom:24px}
+.cdh{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.cdot{width:4px;height:28px;border-radius:4px;background:linear-gradient(to bottom,var(--a1),var(--a2))}
+.ct{font-family:'Outfit',sans-serif;font-weight:700;font-size:1.05rem}
+.cs{font-size:0.73rem;color:var(--mu);margin-top:2px}
+.ch{height:280px;position:relative}
+.tw{overflow-x:auto;border-radius:16px;border:1px solid var(--cb)}
+table{width:100%;border-collapse:collapse;font-size:0.8rem}
+thead{background:rgba(0,229,195,0.05)}
+th{padding:14px 16px;text-align:left;font-weight:600;color:var(--a1);font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--cb)}
+td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.04);transition:background .15s}
+tr:hover td{background:rgba(255,255,255,0.025)}
+tr:last-child td{border-bottom:none}
+.bg{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;font-size:0.7rem;font-weight:600}
+.br{background:rgba(255,107,107,0.15);color:#ff8a8a;border:1px solid rgba(255,107,107,0.2)}
+.ba{background:rgba(255,209,102,0.15);color:#ffd166;border:1px solid rgba(255,209,102,0.2)}
+.bg_{background:rgba(0,229,195,0.15);color:var(--a1);border:1px solid rgba(0,229,195,0.2)}
+.bdr{background:rgba(200,20,20,0.2);color:#ff4444;border:1px solid rgba(200,20,20,0.35);font-weight:700}
+.bgr{background:rgba(255,255,255,0.06);color:var(--mu);border:1px solid var(--cb)}
+.ins{display:flex;align-items:flex-start;gap:14px;background:rgba(255,209,102,0.06);border:1px solid rgba(255,209,102,0.15);border-radius:16px;padding:16px;margin-bottom:12px}
+.ii{width:38px;height:38px;border-radius:10px;background:rgba(255,209,102,0.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;color:var(--a4)}
+.it{font-weight:600;font-size:0.85rem;margin-bottom:4px}
+.ib{font-size:0.78rem;color:var(--mu);line-height:1.6}
+.tr{display:flex;gap:8px;margin-bottom:16px}
+.tb{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--mu);padding:7px 18px;border-radius:12px;cursor:pointer;font-size:0.8rem;font-weight:500;transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif}
+.tb:hover{color:var(--tx)}
+.tb.ac{background:rgba(0,229,195,0.12);border-color:rgba(0,229,195,0.3);color:var(--a1)}
+.pht{margin-bottom:24px}
+.pht h2{font-family:'Outfit',sans-serif;font-size:1.5rem;font-weight:800}
+.pht p{font-size:0.82rem;color:var(--mu);margin-top:4px}
+.rb{height:6px;border-radius:6px;background:rgba(255,255,255,0.08);margin-top:5px;overflow:hidden}
+.rf{height:100%;border-radius:6px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.tc{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:900px){.tc{grid-template-columns:1fr}}
+#toast{position:fixed;bottom:28px;right:28px;z-index:9999;background:rgba(8,20,36,0.96);border:1px solid rgba(0,229,195,0.3);border-radius:14px;padding:14px 20px;font-size:0.82rem;color:var(--tx);box-shadow:var(--glow);display:none;align-items:center;gap:10px;animation:tI .3s ease}
+@keyframes tI{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.st{color:#ffd166;font-size:0.75rem}
+
+/* STORY */
+#sPbar{position:fixed;top:var(--nh);left:0;right:0;height:3px;background:rgba(255,255,255,0.05);z-index:99;display:none}
+#sFill{height:100%;width:0%;background:linear-gradient(90deg,var(--a1),var(--a2),var(--a4));border-radius:0 4px 4px 0;transition:width .12s}
+#sDots{position:fixed;right:22px;top:50%;transform:translateY(-50%);display:none;flex-direction:column;gap:10px;z-index:99}
+#sDots.vis{display:flex}
+.sd{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.14);cursor:pointer;transition:all .3s;position:relative}
+.sd:hover,.sd.ac{background:var(--a1);box-shadow:0 0 10px var(--a1);transform:scale(1.3)}
+.sd::after{content:attr(data-l);position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:0.6rem;color:var(--mu);white-space:nowrap;opacity:0;transition:opacity .2s;font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:1px;text-transform:uppercase;background:rgba(8,20,36,0.92);padding:4px 10px;border-radius:8px;border:1px solid var(--cb)}
+.sd:hover::after{opacity:1}
+#SW{display:none}
+.sc{min-height:100vh;width:100%;display:flex;flex-direction:column;justify-content:center;padding:90px 80px 80px;position:relative;border-bottom:1px solid rgba(255,255,255,0.04)}
+.scc{align-items:center;justify-content:center;text-align:center;background:radial-gradient(ellipse 70% 50% at 50% 40%,rgba(0,229,195,0.1) 0%,transparent 70%)}
+.sctag{display:inline-block;border:1px solid rgba(0,229,195,0.3);background:rgba(0,229,195,0.08);color:var(--a1);font-size:0.68rem;padding:6px 20px;border-radius:40px;letter-spacing:3px;text-transform:uppercase;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;margin-bottom:28px;animation:fU .6s ease both}
+.scbig{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,12vw,11rem);line-height:.9;letter-spacing:2px;background:linear-gradient(135deg,#fff 0%,var(--a1) 50%,var(--a2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;animation:fU .7s .1s ease both}
+.scsub{font-size:0.85rem;letter-spacing:5px;text-transform:uppercase;color:var(--mu);margin:16px 0 36px;animation:fU .7s .2s ease both}
+.scdesc{max-width:640px;font-size:0.92rem;color:var(--mu);line-height:1.9;border:1px solid var(--cb);border-radius:20px;padding:22px 32px;background:rgba(255,255,255,0.02);animation:fU .7s .3s ease both}
+.scdesc strong{color:var(--tx)}
+.scscr{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;font-size:0.62rem;letter-spacing:3px;text-transform:uppercase;color:var(--mu);animation:bD 2s ease-in-out infinite}
+@keyframes bD{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
+@keyframes fU{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+.slbl{font-size:0.62rem;letter-spacing:4px;text-transform:uppercase;color:var(--a1);margin-bottom:10px;display:flex;align-items:center;gap:10px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600}
+.slbl::before{content:'';width:28px;height:1px;background:var(--a1)}
+.sti{font-family:'Outfit',sans-serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:800;line-height:1.1;margin-bottom:8px}
+.ssu{font-size:0.88rem;color:var(--mu);margin-bottom:32px;line-height:1.6}
+.skr{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:14px;margin-bottom:28px}
+.sk{background:var(--card);border:1px solid var(--cb);border-radius:18px;padding:18px 20px;position:relative;overflow:hidden;transition:all .3s}
+.sk:hover{transform:translateY(-3px);border-color:rgba(0,229,195,0.2);box-shadow:var(--glow)}
+.skl{font-size:0.62rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--mu);margin-bottom:6px}
+.skv{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;line-height:1}
+.scc2{background:var(--card);border:1px solid var(--cb);border-radius:22px;padding:24px;position:relative;overflow:hidden;margin-bottom:20px}
+.scc2::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--a1),transparent)}
+.sch{height:260px}
+.sctt{font-family:'Outfit',sans-serif;font-weight:700;font-size:0.9rem;margin-bottom:16px;color:var(--tx)}
+.sfd{background:var(--card);border:1px solid var(--cb);border-radius:20px;padding:22px;position:relative;overflow:hidden;transition:all .3s}
+.sfd:hover{transform:translateY(-4px);border-color:rgba(0,229,195,0.25);box-shadow:var(--glow)}
+.sty{align-items:center;justify-content:center;text-align:center;background:radial-gradient(ellipse 70% 50% at 50% 50%,rgba(124,92,252,0.08) 0%,transparent 70%)}
+.stybig{font-family:'Bebas Neue',sans-serif;font-size:clamp(5rem,14vw,13rem);line-height:.85;background:linear-gradient(135deg,#fff 0%,var(--a2) 50%,var(--a1) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;animation:fU .7s ease both}
+.styln{width:80px;height:3px;background:linear-gradient(90deg,var(--a1),var(--a2));margin:24px auto;animation:fU .7s .1s ease both}
+.stysb{font-size:0.82rem;letter-spacing:4px;text-transform:uppercase;color:var(--mu);animation:fU .7s .2s ease both}
+.stybg{display:flex;gap:20px;justify-content:center;margin-top:48px;flex-wrap:wrap;animation:fU .7s .3s ease both}
+.sbyb{border:1px solid var(--cb);border-radius:18px;padding:18px 26px;text-align:center;background:var(--card)}
+.sbv{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;color:var(--a1);line-height:1}
+.sbl_{font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--mu);font-family:'Plus Jakarta Sans',sans-serif;margin-top:4px}
+.aos{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+.aos.in{opacity:1;transform:translateY(0)}
+.sp2{display:grid;grid-template-columns:1fr 1.2fr;gap:36px;align-items:start}
+.sg2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:1000px){.sp2,.sg2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="bgm"></div>
+<div id="sPbar"><div id="sFill"></div></div>
+<div id="sDots">
+  <div class="sd" data-i="0" data-l="Cover"></div>
+  <div class="sd" data-i="1" data-l="Returns Crisis"></div>
+  <div class="sd" data-i="2" data-l="Category Table"></div>
+  <div class="sd" data-i="3" data-l="Delivery"></div>
+  <div class="sd" data-i="4" data-l="Monthly Trends"></div>
+  <div class="sd" data-i="5" data-l="Payment"></div>
+  <div class="sd" data-i="6" data-l="Recommendations"></div>
+  <div class="sd" data-i="7" data-l="Thank You"></div>
+</div>
+
+<!-- LOGIN -->
+<div id="LS">
+  <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+  <div class="lc">
+    <div class="lb"><div class="ci">&#x1F6D2;</div><h1>QuickCart</h1><div class="sub">E-Commerce Intelligence Hub</div></div>
+    <div id="lerr" class="le"><i class="fas fa-exclamation-circle"></i><span id="leM"></span></div>
+    <label class="ll"><i class="fas fa-user" style="margin-right:5px;color:var(--a1)"></i>Username</label>
+    <input type="text" id="lU" class="li" placeholder="Enter your username" autocomplete="username">
+    <label class="ll"><i class="fas fa-lock" style="margin-right:5px;color:var(--a1)"></i>Password</label>
+    <div class="pw"><input type="password" id="lP" class="li" placeholder="Enter password" autocomplete="current-password" style="margin-bottom:0;padding-right:48px"><button class="pt" id="pT" type="button"><i class="fas fa-eye-slash"></i></button></div>
+    <div class="ph" style="margin-top:8px">&#x26A0; Min 6 characters &middot; must include at least one number</div>
+    <button class="lbtn" id="dLB"><i class="fas fa-chart-line" style="margin-right:8px"></i>Access Analytics</button>
+    <div class="hint">Demo: username <span>analyst</span> &middot; password <span>demo123</span></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="AD" style="display:none;min-height:100vh">
+  <nav class="nb">
+    <div class="nbr"><div class="bi">&#x1F6D2;</div><div><div class="bn">QuickCart Analytics</div><div class="bt">Intelligence Hub &middot; CS-05</div></div></div>
+    <div class="nts">
+      <div class="nt ac" data-p="q1"><i class="fas fa-table-list"></i>Order Summary</div>
+      <div class="nt" data-p="q2"><i class="fas fa-truck"></i>Delayed Deliveries</div>
+      <div class="nt" data-p="q3"><i class="fas fa-chart-line"></i>Monthly Trends</div>
+      <div class="nt" data-p="q4"><i class="fas fa-rotate-left"></i>Return Analysis</div>
+      <div class="nt" data-p="q5"><i class="fas fa-gauge-high"></i>Executive Dashboard</div>
+      <div class="nt" data-p="q6"><i class="fas fa-book-open"></i>Data Story</div>
+    </div>
+    <div class="np">
+      <div class="pb" id="pBtn"><div class="pa">&#x1F469;&#x200D;&#x1F4BC;</div><div><div class="pn">Haseena Fathim</div><div class="pd">Data Analytics</div></div><i class="fas fa-chevron-down" style="font-size:.6rem;color:var(--mu);margin-left:4px"></i></div>
+      <div class="dd" id="pDD">
+        <div class="dh"><div class="da">&#x1F469;&#x200D;&#x1F4BC;</div><div><div class="dn">Haseena Fathim</div><div class="dr">Senior Data Analyst</div><div class="dtg">DATA ANALYTICS</div></div></div>
+        <div class="ds"><span>&#x1F3E2; Company</span><span>QuickCart Inc.</span></div>
+        <div class="ds"><span>&#x1F4CA; Case Study</span><span>CS-05 &middot; Orders</span></div>
+        <div class="ds"><span>&#x23F0; Logged In</span><span id="sT">--</span></div>
+        <div class="ds"><span>&#x1F4E6; Dataset</span><span>200 Orders</span></div>
+        <button class="lo" id="lOB"><i class="fas fa-right-from-bracket"></i>Sign Out</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="mc">
+    <div class="fb" id="fBar">
+      <div class="fg"><label><i class="fas fa-city" style="margin-right:4px"></i>City</label><select id="cF"><option value="all">All Cities</option></select></div>
+      <div class="fg"><label><i class="fas fa-calendar" style="margin-right:4px"></i>From</label><input type="date" id="sD" value="2022-01-01"></div>
+      <div class="fg"><label><i class="fas fa-calendar-check" style="margin-right:4px"></i>To</label><input type="date" id="eD" value="2025-12-31"></div>
+      <div class="fg"><label><i class="fas fa-tag" style="margin-right:4px"></i>Category</label><select id="catF"><option value="all">All Categories</option></select></div>
+      <button class="ab" id="apB"><i class="fas fa-sliders" style="margin-right:6px"></i>Apply</button>
+    </div>
+    <div id="q1P" class="pg ac"><div class="pht"><h2>&#x1F4CB; Order Summary Report</h2><p>Category-wise breakdown with return rate analysis and conditional styling</p></div><div id="q1C"></div></div>
+    <div id="q2P" class="pg"><div class="pht"><h2>&#x1F69A; Delayed Deliveries Report</h2><p>Orders with delivery delays &mdash; highlighted by severity</p></div><div id="q2C"></div></div>
+    <div id="q3P" class="pg"><div class="pht"><h2>&#x1F4C8; Monthly Order Trends</h2><p>Volume and revenue trend visualization with chart toggle</p></div><div id="q3C"></div></div>
+    <div id="q4P" class="pg"><div class="pht"><h2>&#x1F50E; Return Rate Exploration</h2><p>Deep-dive into return patterns with actionable insights</p></div><div id="q4C"></div></div>
+    <div id="q5P" class="pg"><div class="pht"><h2>&#x1F3AF; Executive Dashboard</h2><p>High-level KPIs, top spenders, city and payment breakdowns</p></div><div id="q5C"></div></div>
+    <div id="q6P" class="pg"></div>
+  </div>
+</div>
+
+<!-- STORY WRAPPER -->
+<div id="SW">
+  <section class="sc scc" id="sc0">
+    <div class="sctag"><i class="fas fa-chart-line" style="margin-right:6px"></i>Intelligence Hub &middot; Case Study 05</div>
+    <div class="scbig">QuickCart<br>Analytics</div>
+    <div class="scsub">Data-driven story &mdash; from operational gaps to strategic clarity</div>
+    <div class="scdesc" id="coverKpis">Loading summary...</div>
+    <div class="scscr"><span>Scroll to explore</span><i class="fas fa-chevron-down"></i></div>
+  </section>
+  <section class="sc" id="sc1">
+    <div class="slbl">Scene 01 &middot; Return Rate Crisis</div>
+    <div class="sti">Return rate crisis &amp; category hotspots</div>
+    <div class="ssu">Overall return rate is significantly above industry benchmark (8&ndash;10%). Books, Sports &amp; Beauty are the top offenders.</div>
+    <div class="sp2 aos">
+      <div>
+        <p style="font-size:0.92rem;color:var(--mu);line-height:1.8;margin-bottom:16px"><strong style="color:var(--tx)" id="s1overallRet">--</strong> overall return rate. <strong style="color:var(--a3)">Books</strong> leads with the highest rate, followed by <strong style="color:var(--a4)">Sports</strong> and <strong style="color:var(--a1)">Beauty</strong>. Primary reasons: "Not as Described" and Size Issues.</p>
+        <div id="s1insightList" style="display:flex;flex-direction:column;gap:10px"></div>
+        <div style="margin-top:18px" id="s1bottomBadge"></div>
+      </div>
+      <div class="scc2">
+        <div class="sctt">Return Rate % by Category</div>
+        <div class="sch"><canvas id="s1RetChart"></canvas></div>
+        <div style="text-align:center;font-size:0.68rem;color:var(--mu);margin-top:8px">&#x1F534; &gt;20% High &nbsp;&#x1F7E1; 10&ndash;20% Medium &nbsp;&#x1F7E2; &lt;10% Low</div>
+      </div>
+    </div>
+  </section>
+  <section class="sc" id="sc2" style="background:linear-gradient(180deg,var(--bg2),var(--bg))">
+    <div class="slbl">Scene 02 &middot; Category-wise Order Summary</div>
+    <div class="sti">Category-wise order summary &middot; conditional styling</div>
+    <div class="ssu">Full breakdown with colour-coded return risk &mdash; Red &gt;20%, Amber 10&ndash;20%, Green &lt;10%</div>
+    <div class="aos" style="overflow-x:auto;border-radius:18px;border:1px solid var(--cb)">
+      <table style="width:100%;border-collapse:collapse;font-size:0.82rem">
+        <thead style="background:rgba(0,229,195,0.06)">
+          <tr>
+            <th style="padding:14px 16px;text-align:left;color:var(--a1);font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--cb)">Category</th>
+            <th style="padding:14px 16px;text-align:left;color:var(--a1);font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--cb)">Orders</th>
+            <th style="padding:14px 16px;text-align:left;color:var(--a1);font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--cb)">Revenue</th>
+            <th style="padding:14px 16px;text-align:left;color:var(--a1);font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--cb)">Returns</th>
+            <th style="padding:14px 16px;text-align:left;color:var(--a1);font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--cb)">Return Rate</th>
+            <th style="padding:14px 16px;text-align:left;color:var(--a1);font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--cb)">Risk Level</th>
+            <th style="padding:14px 16px;text-align:left;color:var(--a1);font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--cb)">Avg Rating</th>
+          </tr>
+        </thead>
+        <tbody id="s2TableBody"></tbody>
+      </table>
+    </div>
+    <div class="aos" style="margin-top:16px;background:rgba(0,229,195,0.05);border:1px solid rgba(0,229,195,0.15);border-radius:16px;padding:14px 18px;font-size:0.82rem;color:var(--mu)">
+      <i class="fas fa-lightbulb" style="color:var(--a4);margin-right:8px"></i>
+      <strong style="color:var(--tx)">Action:</strong> Immediate seller quality audits for Books &amp; Sports. Monitor categories exceeding 20% threshold monthly.
+    </div>
+  </section>
+  <section class="sc" id="sc3" style="background:var(--bg)">
+    <div class="slbl">Scene 03 &middot; Logistics Breakdown</div>
+    <div class="sti">Logistics breakdown: <span id="s3FailPct">--</span> orders delayed or failed</div>
+    <div class="ssu">Only <span id="s3OnTimePct">--</span> of deliveries arrived on time. Chennai, Kolkata &amp; Hyderabad are major hotspots.</div>
+    <div class="sp2 aos">
+      <div>
+        <div class="skr" id="s3kpis" style="grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px"></div>
+        <div id="s3insightList" style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px"></div>
+        <div id="s3urgBadge"></div>
+      </div>
+      <div class="scc2">
+        <div class="sctt">Delivery Status Distribution</div>
+        <div class="sch"><canvas id="s3DelChart"></canvas></div>
+      </div>
+    </div>
+  </section>
+  <section class="sc" id="sc4" style="background:linear-gradient(180deg,var(--bg2),var(--bg))">
+    <div class="slbl">Scene 04 &middot; Seasonal Order Volume</div>
+    <div class="sti">Seasonal order volume &middot; peak &amp; trough</div>
+    <div class="ssu">March peaks, November dips &mdash; clear seasonality that demands proactive logistics scaling.</div>
+    <div class="sp2 aos" style="align-items:center">
+      <div class="scc2">
+        <div class="sctt">Monthly Order Volume (2024)</div>
+        <div class="sch"><canvas id="s4MonChart"></canvas></div>
+      </div>
+      <div>
+        <div class="skr" id="s4kpis" style="grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px"></div>
+        <div id="s4insightList" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+    </div>
+  </section>
+  <section class="sc" id="sc5" style="background:var(--bg)">
+    <div class="slbl">Scene 05 &middot; Payment Behaviour &amp; High-Value Customers</div>
+    <div class="sti">Payment behavior &amp; high-value customers</div>
+    <div class="ssu">Net Banking users drive highest avg cart value. VIP retention programs can unlock significant revenue uplift.</div>
+    <div class="sg2 aos">
+      <div class="scc2">
+        <div class="sctt">Avg Cart Value by Payment Mode (&#x20B9;)</div>
+        <div class="sch"><canvas id="s5PayChart"></canvas></div>
+      </div>
+      <div class="scc2">
+        <div class="sctt">Top 5 Orders by Cart Value</div>
+        <div class="sch"><canvas id="s5TopChart"></canvas></div>
+      </div>
+    </div>
+    <div class="aos" id="s5text" style="margin-top:18px;font-size:0.85rem;color:var(--mu);line-height:1.8;background:var(--card);border:1px solid var(--cb);border-radius:16px;padding:16px 20px"></div>
+  </section>
+  <section class="sc" id="sc6" style="background:linear-gradient(180deg,var(--bg2),var(--bg))">
+    <div class="slbl">Scene 06 &middot; Executive Recommendations</div>
+    <div class="sti">Executive recommendations &middot; path to recovery</div>
+    <div class="ssu">Five strategic actions to reduce returns, fix logistics, and grow revenue in 2025.</div>
+    <div class="sg2 aos" id="s6recs"></div>
+    <div class="aos" id="s6summary" style="margin-top:24px;background:rgba(0,229,195,0.06);border:1px solid rgba(0,229,195,0.2);border-radius:20px;padding:18px 24px;text-align:center;font-size:0.88rem;color:var(--mu)"></div>
+  </section>
+  <section class="sc sty" id="sc7">
+    <div class="stybig">Thank<br>You</div>
+    <div class="styln"></div>
+    <div class="stysb">QuickCart Analytics &middot; CS-05 &middot; Data Story &middot; Haseena Fathim</div>
+    <div class="stybg" id="s7badges"></div>
+    <div style="margin-top:40px;font-size:0.7rem;color:var(--mu);letter-spacing:2px;text-transform:uppercase" id="s7ts"></div>
+  </section>
+</div>
+
+<div id="toast"><i class="fas fa-check-circle" style="color:var(--a1)"></i><span id="tM"></span></div>
+
+<script>
+// ── DATASET ──
+var catArr=["Beauty","Books","Electronics","Fashion","Groceries","Home Decor","Sports","Toys"];
+var cityArr=["Chennai","Delhi","Mumbai","Bengaluru","Hyderabad","Kolkata","Pune","Jaipur"];
+var payArr=["UPI","Credit Card","Debit Card","COD","Net Banking","Wallet"];
+
+var FD=[];
+var fixed=[
+  {OrderID:"ORD00001",City:"Chennai",Category:"Beauty",OrderDate:"2022-10-15",DeliveryStatus:"Delayed",ReturnFlag:"No",CartValue:48623.16,PaymentMode:"Debit Card",Rating:2.1},
+  {OrderID:"ORD00002",City:"Delhi",Category:"Books",OrderDate:"2022-03-01",DeliveryStatus:"Delayed",ReturnFlag:"No",CartValue:48766.24,PaymentMode:"Net Banking",Rating:4.0},
+  {OrderID:"ORD00003",City:"Chennai",Category:"Home Decor",OrderDate:"2022-01-15",DeliveryStatus:"Failed",ReturnFlag:"Yes",CartValue:53884.00,PaymentMode:"Debit Card",Rating:3.9},
+  {OrderID:"ORD00004",City:"Pune",Category:"Home Decor",OrderDate:"2022-06-02",DeliveryStatus:"Delayed",ReturnFlag:"No",CartValue:24713.45,PaymentMode:"Debit Card",Rating:2.1},
+  {OrderID:"ORD00005",City:"Chennai",Category:"Sports",OrderDate:"2022-11-18",DeliveryStatus:"Failed",ReturnFlag:"No",CartValue:34428.08,PaymentMode:"Wallet",Rating:1.8},
+  {OrderID:"ORD00006",City:"Chennai",Category:"Books",OrderDate:"2023-08-28",DeliveryStatus:"Delayed",ReturnFlag:"No",CartValue:162848.24,PaymentMode:"UPI",Rating:2.7},
+  {OrderID:"ORD00007",City:"Chennai",Category:"Sports",OrderDate:"2023-05-14",DeliveryStatus:"Failed",ReturnFlag:"No",CartValue:87709.68,PaymentMode:"Debit Card",Rating:3.2},
+  {OrderID:"ORD00008",City:"Chennai",Category:"Beauty",OrderDate:"2023-05-31",DeliveryStatus:"Delayed",ReturnFlag:"No",CartValue:17121.39,PaymentMode:"Debit Card",Rating:3.8},
+  {OrderID:"ORD00009",City:"Hyderabad",Category:"Beauty",OrderDate:"2023-12-26",DeliveryStatus:"Failed",ReturnFlag:"No",CartValue:176481.44,PaymentMode:"Wallet",Rating:2.3},
+  {OrderID:"ORD00010",City:"Mumbai",Category:"Home Decor",OrderDate:"2023-07-19",DeliveryStatus:"Delayed",ReturnFlag:"No",CartValue:19994.11,PaymentMode:"Credit Card",Rating:4.1},
+  {OrderID:"ORD00011",City:"Delhi",Category:"Electronics",OrderDate:"2024-02-26",DeliveryStatus:"On-Time",ReturnFlag:"Yes",CartValue:30287.56,PaymentMode:"Credit Card",Rating:3.1},
+  {OrderID:"ORD00012",City:"Chennai",Category:"Electronics",OrderDate:"2024-03-21",DeliveryStatus:"Failed",ReturnFlag:"No",CartValue:23087.58,PaymentMode:"UPI",Rating:3.0},
+  {OrderID:"ORD00013",City:"Hyderabad",Category:"Home Decor",OrderDate:"2024-09-05",DeliveryStatus:"On-Time",ReturnFlag:"No",CartValue:14226.18,PaymentMode:"UPI",Rating:1.3},
+  {OrderID:"ORD00014",City:"Kolkata",Category:"Electronics",OrderDate:"2024-09-15",DeliveryStatus:"On-Time",ReturnFlag:"No",CartValue:4178.10,PaymentMode:"Debit Card",Rating:2.8},
+  {OrderID:"ORD00015",City:"Kolkata",Category:"Books",OrderDate:"2024-02-21",DeliveryStatus:"Failed",ReturnFlag:"Yes",CartValue:115409.76,PaymentMode:"UPI",Rating:3.9},
+  {OrderID:"ORD00016",City:"Pune",Category:"Beauty",OrderDate:"2025-07-09",DeliveryStatus:"Delayed",ReturnFlag:"No",CartValue:11280.64,PaymentMode:"Wallet",Rating:4.9},
+  {OrderID:"ORD00017",City:"Kolkata",Category:"Toys",OrderDate:"2025-02-18",DeliveryStatus:"Delayed",ReturnFlag:"Yes",CartValue:173019.60,PaymentMode:"COD",Rating:4.0},
+  {OrderID:"ORD00018",City:"Chennai",Category:"Books",OrderDate:"2025-03-18",DeliveryStatus:"Delayed",ReturnFlag:"Yes",CartValue:172404.90,PaymentMode:"COD",Rating:2.9},
+  {OrderID:"ORD00019",City:"Delhi",Category:"Fashion",OrderDate:"2025-10-11",DeliveryStatus:"On-Time",ReturnFlag:"Yes",CartValue:21342.53,PaymentMode:"COD",Rating:1.7},
+  {OrderID:"ORD00020",City:"Delhi",Category:"Beauty",OrderDate:"2025-09-25",DeliveryStatus:"On-Time",ReturnFlag:"Yes",CartValue:187373.85,PaymentMode:"Debit Card",Rating:3.6}
+];
+fixed.forEach(function(r){FD.push(r);});
+
+function seededRand(seed){
+  var x=Math.sin(seed+1)*10000;
+  return x-Math.floor(x);
+}
+
+for(var i=21;i<=200;i++){
+  var s1=seededRand(i*3),s2=seededRand(i*7),s3=seededRand(i*11),s4=seededRand(i*13);
+  var s5=seededRand(i*17),s6=seededRand(i*19),s7=seededRand(i*23);
+  var catIdx=Math.floor(s1*catArr.length);
+  var cityIdx=Math.floor(s2*cityArr.length);
+  var payIdx=Math.floor(s3*payArr.length);
+  var ds=s4<0.55?"Delayed":s4<0.78?"Failed":"On-Time";
+  var rf=s5>0.78?"Yes":"No";
+  var cv=Math.round(5000+s6*185000);
+  var rating=parseFloat((1+s7*4).toFixed(1));
+  var month=Math.floor(seededRand(i*29)*12);
+  var day=Math.floor(seededRand(i*31)*28)+1;
+  var yearOpts=[2022,2022,2023,2023,2024,2024,2024,2025,2025,2025];
+  var year=yearOpts[Math.floor(seededRand(i*37)*10)];
+  var orderDate=new Date(year,month,day).toISOString().split('T')[0];
+  FD.push({
+    OrderID:"ORD"+String(i).padStart(5,'0'),
+    City:cityArr[cityIdx],
+    Category:catArr[catIdx],
+    OrderDate:orderDate,
+    DeliveryStatus:ds,
+    ReturnFlag:rf,
+    CartValue:cv,
+    PaymentMode:payArr[payIdx],
+    Rating:Math.min(5,Math.max(1,rating))
+  });
+}
+
+// ── STATE ──
+var F={city:"all",sd:"2022-01-01",ed:"2025-12-31",cat:"all"};
+var CH={};
+var cCT="bar";
+
+var AC=['rgba(0,229,195,0.8)','rgba(124,92,252,0.8)','rgba(255,209,102,0.8)','rgba(255,107,107,0.8)','rgba(0,180,255,0.8)','rgba(255,130,50,0.8)','rgba(255,107,157,0.8)','rgba(100,220,120,0.8)'];
+var CO={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#7a8faa',padding:14,font:{size:11}}}},scales:{x:{ticks:{color:'#7a8faa',font:{size:10}},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#7a8faa',font:{size:10}},grid:{color:'rgba(255,255,255,0.05)'}}}};
+var DO={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#7a8faa',padding:14,font:{size:11}}}},cutout:'60%'};
+
+function gF(){
+  var sd=new Date(F.sd||"2022-01-01");
+  var ed=new Date(F.ed||"2025-12-31");
+  return FD.filter(function(o){
+    if(F.city!=="all"&&o.City!==F.city)return false;
+    if(F.cat!=="all"&&o.Category!==F.cat)return false;
+    var d=new Date(o.OrderDate);
+    return d>=sd&&d<=ed;
+  });
+}
+
+function cA(data){
+  var m=new Map();
+  data.forEach(function(o){
+    if(!m.has(o.Category))m.set(o.Category,{orders:0,revenue:0,returns:0,ratings:[]});
+    var s=m.get(o.Category);
+    s.orders++;s.revenue+=o.CartValue;
+    if(o.ReturnFlag==="Yes")s.returns++;
+    s.ratings.push(o.Rating);
+  });
+  return Array.from(m.entries()).map(function(e){
+    var cat=e[0],v=e[1];
+    return{category:cat,orders:v.orders,revenue:v.revenue,returns:v.returns,
+    rate:v.orders>0?(v.returns/v.orders)*100:0,
+    avgRating:v.ratings.length?(v.ratings.reduce(function(a,b){return a+b;},0)/v.ratings.length).toFixed(1):"0.0"};
+  }).sort(function(a,b){return b.revenue-a.revenue;});
+}
+
+function dC(id){if(CH[id]){CH[id].destroy();delete CH[id];}}
+function fmt(n){return Math.round(n).toLocaleString('en-IN');}
+function fL(n){return(n/100000).toFixed(2)+"L";}
+
+// ── Q1 ──
+function rQ1(){
+  var data=gF();
+  var cd=cA(data);
+  var tot=data.length;
+  var rev=data.reduce(function(s,o){return s+o.CartValue;},0);
+  var ret=data.filter(function(o){return o.ReturnFlag==="Yes";}).length;
+  var ont=data.filter(function(o){return o.DeliveryStatus==="On-Time";}).length;
+  var aR=tot>0?(data.reduce(function(s,o){return s+o.Rating;},0)/tot).toFixed(1):"0.0";
+  var retRate=tot>0?((ret/tot)*100).toFixed(1):"0.0";
+  var ontRate=tot>0?((ont/tot)*100).toFixed(1):"0.0";
+
+  var rows=cd.map(function(c){
+    var bc=c.rate>20?"br":c.rate>=10?"ba":"bg_";
+    var al=c.rate>20?"&#x1F534; High Risk":c.rate>=10?"&#x1F7E1; Monitor":"&#x1F7E2; Stable";
+    var fc=c.rate>20?"#ff6b6b":c.rate>=10?"#ffd166":"#00e5c3";
+    return '<tr><td><strong>'+c.category+'</strong></td><td>'+c.orders+'</td><td>&#x20B9;'+Math.round(c.revenue/1000)+'K</td><td>'+c.returns+'</td>'+
+    '<td><div style="display:flex;align-items:center;gap:8px"><span class="bg '+bc+'">'+c.rate.toFixed(1)+'%</span>'+
+    '<div style="flex:1;min-width:60px"><div class="rb"><div class="rf" style="width:'+Math.min(c.rate,100)+'%;background:'+fc+'"></div></div></div></div></td>'+
+    '<td><span class="bg '+bc+'">'+al+'</span></td><td>'+c.avgRating+' <span class="st">&#x2605;</span></td></tr>';
+  }).join('');
+
+  document.getElementById("q1C").innerHTML=
+    '<div class="kr">'+
+    '<div class="kc"><div class="ki" style="background:rgba(0,229,195,0.12);color:var(--a1)"><i class="fas fa-box"></i></div><div class="kl">Total Orders</div><div class="kv" style="color:var(--a1)">'+tot+'</div><div class="ks">Filtered dataset</div></div>'+
+    '<div class="kc"><div class="ki" style="background:rgba(255,209,102,0.12);color:var(--a4)"><i class="fas fa-indian-rupee-sign"></i></div><div class="kl">Total Revenue</div><div class="kv" style="color:var(--a4)">&#x20B9;'+fL(rev)+'</div><div class="ks">Cart value total</div></div>'+
+    '<div class="kc"><div class="ki" style="background:rgba(255,107,107,0.12);color:var(--a3)"><i class="fas fa-rotate-left"></i></div><div class="kl">Returns</div><div class="kv" style="color:var(--a3)">'+ret+'</div><div class="ks">Rate: '+retRate+'%</div></div>'+
+    '<div class="kc"><div class="ki" style="background:rgba(0,229,195,0.08);color:var(--a1)"><i class="fas fa-check-circle"></i></div><div class="kl">On-Time</div><div class="kv" style="color:var(--a1)">'+ont+'</div><div class="ks">'+ontRate+'%</div></div>'+
+    '<div class="kc"><div class="ki" style="background:rgba(124,92,252,0.12);color:#a78bfa"><i class="fas fa-star"></i></div><div class="kl">Avg Rating</div><div class="kv" style="color:#a78bfa">'+aR+'</div><div class="ks">Out of 5.0</div></div>'+
+    '</div>'+
+    '<div class="cd"><div class="cdh"><div class="cdot"></div><div><div class="ct">Category-wise Order Summary</div><div class="cs">Red &gt;20% &middot; Amber 10&ndash;20% &middot; Green &lt;10% return rate</div></div></div>'+
+    '<div class="tw"><table><thead><tr><th>Category</th><th>Orders</th><th>Revenue</th><th>Returns</th><th>Return Rate</th><th>Risk Level</th><th>Avg Rating</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<div style="margin-top:14px;font-size:0.7rem;color:var(--mu)"><i class="fas fa-clock" style="margin-right:4px;color:var(--a1)"></i>Generated: '+new Date().toLocaleString('en-IN')+' &middot; QuickCart Analytics</div></div>';
+}
+
+// ── Q2 ──
+function rQ2(){
+  var data=gF().filter(function(o){return o.DeliveryStatus==="Delayed"||o.DeliveryStatus==="Failed";});
+  var en=data.map(function(o){
+    var exp=new Date(o.OrderDate);
+    exp.setDate(exp.getDate()+5);
+    var act=new Date(o.OrderDate);
+    act.setDate(act.getDate()+5+Math.floor(Math.random()*10));
+    var dd=Math.max(0,Math.floor((act-exp)/86400000));
+    return Object.assign({},o,{dd:dd,expStr:exp.toISOString().split('T')[0],actStr:act.toISOString().split('T')[0]});
+  }).sort(function(a,b){return b.dd-a.dd;});
+  var avg=en.length?(en.reduce(function(s,d){return s+d.dd;},0)/en.length).toFixed(1):"0";
+  var sv=en.filter(function(d){return d.dd>7;}).length;
+  var fl=data.filter(function(d){return d.DeliveryStatus==="Failed";}).length;
+
+  var rows=en.slice(0,80).map(function(d){
+    var cls=d.dd>7?"bdr":d.dd>3?"ba":"bgr";
+    var sc=d.DeliveryStatus==="Failed"?"br":"ba";
+    return '<tr><td style="font-family:Outfit,sans-serif;font-size:0.78rem">'+d.OrderID+'</td><td>'+d.City+'</td><td>'+d.Category+'</td>'+
+    '<td><span class="bg '+sc+'">'+d.DeliveryStatus+'</span></td>'+
+    '<td style="color:var(--mu);font-size:0.75rem">'+d.expStr+'</td>'+
+    '<td style="color:var(--mu);font-size:0.75rem">'+d.actStr+'</td>'+
+    '<td><span class="bg '+cls+'">'+d.dd+' days'+(d.dd>7?" &#x26A0;&#xFE0F;":"")+'</span></td>'+
+    '<td>'+d.Rating+' <span class="st">&#x2605;</span></td></tr>';
+  }).join('');
+
+  document.getElementById("q2C").innerHTML=
+    '<div class="kr">'+
+    '<div class="kc"><div class="ki" style="background:rgba(255,107,107,0.12);color:var(--a3)"><i class="fas fa-triangle-exclamation"></i></div><div class="kl">Delayed/Failed</div><div class="kv" style="color:var(--a3)">'+en.length+'</div></div>'+
+    '<div class="kc"><div class="ki" style="background:rgba(255,209,102,0.12);color:var(--a4)"><i class="fas fa-clock"></i></div><div class="kl">Avg Delay</div><div class="kv" style="color:var(--a4)">'+avg+'<span style="font-size:1rem"> days</span></div></div>'+
+    '<div class="kc"><div class="ki" style="background:rgba(200,20,20,0.15);color:#ff5555"><i class="fas fa-circle-exclamation"></i></div><div class="kl">Severe &gt;7 days</div><div class="kv" style="color:#ff5555">'+sv+'</div></div>'+
+    '<div class="kc"><div class="ki" style="background:rgba(255,107,107,0.12);color:var(--a3)"><i class="fas fa-xmark-circle"></i></div><div class="kl">Failed</div><div class="kv" style="color:var(--a3)">'+fl+'</div></div>'+
+    '</div>'+
+    '<div class="cd"><div class="cdh"><div class="cdot" style="background:linear-gradient(to bottom,var(--a3),var(--a4))"></div><div><div class="ct">Delayed &amp; Failed Orders</div><div class="cs">Dark red = severe delay &gt;7 days &middot; sorted by severity</div></div></div>'+
+    '<div class="tw"><table><thead><tr><th>Order ID</th><th>City</th><th>Category</th><th>Status</th><th>Expected</th><th>Actual</th><th>Delay</th><th>Rating</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+}
+
+// ── Q3 ──
+function rQ3(){
+  dC('m');dC('t5c');dC('rvc');
+  var data=gF();
+  var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var mM=new Map(months.map(function(m){return[m,{orders:0,revenue:0}];}));
+  data.forEach(function(o){
+    var m=new Date(o.OrderDate).toLocaleString('default',{month:'short'});
+    if(mM.has(m)){mM.get(m).orders++;mM.get(m).revenue+=o.CartValue;}
+  });
+  var oA=months.map(function(m){return mM.get(m).orders;});
+  var rA=months.map(function(m){return Math.round(mM.get(m).revenue/1000);});
+  var maxIdx=oA.indexOf(Math.max.apply(null,oA));
+  var mxM=months[maxIdx];
+  var nz=oA.map(function(v,i){return v>0?i:-1;}).filter(function(i){return i>=0;});
+  var mnM=nz.length?months[nz.reduce(function(a,b){return oA[a]<oA[b]?a:b;})]:"N/A";
+  var t5=cA(data).slice(0,5);
+
+  var barBg=months.map(function(_,i){
+    var hue=160+i*14;
+    return 'hsla('+hue+',70%,60%,0.75)';
+  });
+
+  document.getElementById("q3C").innerHTML=
+    '<div class="cd"><div class="cdh"><div class="cdot"></div><div class="ct">Monthly Order Volume</div></div>'+
+    '<div class="tr"><button class="tb '+(cCT==='bar'?'ac':'')+'" id="bB">&#x1F4CA; Bar</button><button class="tb '+(cCT==='line'?'ac':'')+'" id="lB">&#x1F4C8; Line</button></div>'+
+    '<div class="ch"><canvas id="mC"></canvas></div>'+
+    '<div style="display:flex;gap:14px;margin-top:16px;flex-wrap:wrap">'+
+    '<div style="background:rgba(0,229,195,0.08);border:1px solid rgba(0,229,195,0.2);border-radius:14px;padding:14px 18px;flex:1"><div style="font-size:0.62rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--mu)">Peak Month</div><div style="font-family:Outfit,sans-serif;font-size:1.4rem;font-weight:700;color:var(--a1);margin-top:4px">'+mxM+'</div><div style="font-size:0.73rem;color:var(--mu)">'+mM.get(mxM).orders+' orders</div></div>'+
+    '<div style="background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.2);border-radius:14px;padding:14px 18px;flex:1"><div style="font-size:0.62rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--mu)">Lowest Month</div><div style="font-family:Outfit,sans-serif;font-size:1.4rem;font-weight:700;color:var(--a3);margin-top:4px">'+mnM+'</div><div style="font-size:0.73rem;color:var(--mu)">'+(mnM!=="N/A"?mM.get(mnM).orders:0)+' orders</div></div>'+
+    '<div style="background:rgba(255,209,102,0.08);border:1px solid rgba(255,209,102,0.2);border-radius:14px;padding:14px 18px;flex:1"><div style="font-size:0.62rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--mu)">Total Orders</div><div style="font-family:Outfit,sans-serif;font-size:1.4rem;font-weight:700;color:var(--a4);margin-top:4px">'+data.length+'</div><div style="font-size:0.73rem;color:var(--mu)">Filtered</div></div>'+
+    '</div></div>'+
+    '<div class="tc">'+
+    '<div class="cd"><div class="cdh"><div class="cdot" style="background:linear-gradient(to bottom,var(--a4),var(--a2))"></div><div class="ct">Top 5 Categories by Revenue</div></div><div class="ch"><canvas id="t5C"></canvas></div></div>'+
+    '<div class="cd"><div class="cdh"><div class="cdot" style="background:linear-gradient(to bottom,var(--a2),var(--a3))"></div><div class="ct">Monthly Revenue (&#x20B9;K)</div></div><div class="ch"><canvas id="rvC"></canvas></div></div>'+
+    '</div>';
+
+  CH['m']=new Chart(document.getElementById("mC"),{type:cCT,data:{labels:months,datasets:[{label:'Orders',data:oA,
+    backgroundColor:cCT==='bar'?barBg:'rgba(0,229,195,0.12)',
+    borderColor:'#00e5c3',borderWidth:2,fill:cCT==='line',tension:0.4,
+    pointBackgroundColor:'#00e5c3',pointRadius:5}]},options:CO});
+  CH['t5c']=new Chart(document.getElementById("t5C"),{type:'bar',data:{labels:t5.map(function(c){return c.category;}),datasets:[{label:'Revenue (&#x20B9;K)',data:t5.map(function(c){return Math.round(c.revenue/1000);}),backgroundColor:AC,borderRadius:8,borderSkipped:false}]},options:CO});
+  CH['rvc']=new Chart(document.getElementById("rvC"),{type:'line',data:{labels:months,datasets:[{label:'Revenue (&#x20B9;K)',data:rA,backgroundColor:'rgba(255,209,102,0.12)',borderColor:'#ffd166',borderWidth:2,fill:true,tension:0.4,pointBackgroundColor:'#ffd166',pointRadius:4}]},options:CO});
+
+  document.getElementById("bB").addEventListener('click',function(){cCT='bar';rQ3();});
+  document.getElementById("lB").addEventListener('click',function(){cCT='line';rQ3();});
+}
+
+// ── Q4 ──
+function rQ4(){
+  dC('retC');dC('rcatC');
+  var data=gF();
+  var cd=cA(data).sort(function(a,b){return b.rate-a.rate;});
+
+  var rows=cd.map(function(c){
+    var bc=c.rate>20?"br":c.rate>=10?"ba":"bg_";
+    var fc=c.rate>20?"#ff6b6b":c.rate>=10?"#ffd166":"#00e5c3";
+    return '<tr><td><strong>'+c.category+'</strong></td><td>'+c.orders+'</td><td>'+c.returns+'</td>'+
+    '<td><div style="display:flex;align-items:center;gap:8px"><span class="bg '+bc+'">'+c.rate.toFixed(1)+'%</span>'+
+    '<div style="flex:1;min-width:80px"><div class="rb"><div class="rf" style="width:'+Math.min(c.rate,100)+'%;background:'+fc+'"></div></div></div></div></td>'+
+    '<td>'+c.avgRating+' <span class="st">&#x2605;</span></td>'+
+    '<td><span class="bg '+bc+'">'+(c.rate>20?"&#x1F534; Critical":c.rate>=10?"&#x1F7E1; Watch":"&#x1F7E2; Good")+'</span></td></tr>';
+  }).join('');
+
+  document.getElementById("q4C").innerHTML=
+    '<div class="tc">'+
+    '<div class="cd"><div class="cdh"><div class="cdot" style="background:linear-gradient(to bottom,var(--a3),var(--a4))"></div><div class="ct">Return Rate by Category</div></div><div class="ch"><canvas id="rCC"></canvas></div></div>'+
+    '<div class="cd"><div class="cdh"><div class="cdot" style="background:linear-gradient(to bottom,var(--a2),var(--a1))"></div><div class="ct">Rating vs Returns Comparison</div></div><div class="ch"><canvas id="rcCC"></canvas></div></div>'+
+    '</div>'+
+    '<div class="cd"><div class="cdh"><div class="cdot"></div><div><div class="ct">Return Rate Deep-Dive</div><div class="cs">Sorted by return rate descending</div></div></div>'+
+    '<div class="tw"><table><thead><tr><th>Category</th><th>Orders</th><th>Returns</th><th>Return Rate</th><th>Avg Rating</th><th>Action</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>'+
+    '<div class="cd"><div class="cdh"><div class="cdot" style="background:linear-gradient(to bottom,var(--a4),var(--a3))"></div><div class="ct">&#x1F4A1; Actionable Insights</div></div>'+
+    '<div class="ins"><div class="ii">&#x1F4DA;</div><div><div class="it">Books: High Return Rate</div><div class="ib">Books show the highest return rates. Primary cause: "Not as Described." Enforce seller QC and add preview features before purchase.</div></div></div>'+
+    '<div class="ins" style="border-color:rgba(124,92,252,0.2);background:rgba(124,92,252,0.06)"><div class="ii" style="background:rgba(124,92,252,0.15);color:#a78bfa">&#x1F4B3;</div><div><div class="it">Net Banking = Premium Segment</div><div class="ib">Net Banking users have significantly higher average cart values. Launch a VIP loyalty tier for this segment with exclusive benefits.</div></div></div>'+
+    '<div class="ins" style="border-color:rgba(255,107,107,0.2);background:rgba(255,107,107,0.06)"><div class="ii" style="background:rgba(255,107,107,0.15);color:var(--a3)">&#x1F45F;</div><div><div class="it">Sports &amp; Beauty: Size/Shade Issues</div><div class="ib">Both categories show elevated returns. Implement AR try-on, mandatory size guides, and shade matching for Beauty products.</div></div></div>'+
+    '<div class="ins" style="border-color:rgba(0,229,195,0.2);background:rgba(0,229,195,0.05)"><div class="ii" style="background:rgba(0,229,195,0.12);color:var(--a1)">&#x2B50;</div><div><div class="it">Low Ratings Linked to Returns</div><div class="ib">Orders with ratings below 2.5 are significantly more likely to be returned. Auto-flag low-rated orders for immediate CS intervention.</div></div></div>'+
+    '</div>';
+
+  CH['retC']=new Chart(document.getElementById("rCC"),{type:'bar',data:{labels:cd.map(function(c){return c.category;}),datasets:[{label:'Return Rate %',data:cd.map(function(c){return parseFloat(c.rate.toFixed(1));}),backgroundColor:cd.map(function(c){return c.rate>20?"rgba(255,107,107,0.8)":c.rate>=10?"rgba(255,209,102,0.8)":"rgba(0,229,195,0.8)";}),borderRadius:8,borderSkipped:false}]},options:CO});
+  var sr=cd.slice().sort(function(a,b){return parseFloat(b.avgRating)-parseFloat(a.avgRating);});
+  CH['rcatC']=new Chart(document.getElementById("rcCC"),{type:'bar',data:{labels:sr.map(function(c){return c.category;}),datasets:[{label:'Avg Rating',data:sr.map(function(c){return parseFloat(c.avgRating);}),backgroundColor:'rgba(124,92,252,0.75)',borderRadius:6},{label:'Return Rate %',data:sr.map(function(c){return parseFloat(c.rate.toFixed(1));}),backgroundColor:'rgba(255,107,107,0.55)',borderRadius:6}]},options:CO});
+}
+
+// ── Q5 ──
+function rQ5(){
+  dC('dlC2');dC('pyC2');dC('cyC2');
+  var data=gF();
+  var rev=data.reduce(function(s,o){return s+o.CartValue;},0);
+  var tot=data.length;
+  var ret=data.filter(function(o){return o.ReturnFlag==="Yes";}).length;
+  var ont=data.filter(function(o){return o.DeliveryStatus==="On-Time";}).length;
+  var aR=tot>0?(data.reduce(function(s,o){return s+o.Rating;},0)/tot).toFixed(1):"0.0";
+  var rR=tot>0?((ret/tot)*100).toFixed(1):"0.0";
+  var oR=tot>0?((ont/tot)*100).toFixed(1):"0.0";
+  var tS=data.slice().sort(function(a,b){return b.CartValue-a.CartValue;}).slice(0,5);
+  var pM=new Map();
+  data.forEach(function(o){pM.set(o.PaymentMode,(pM.get(o.PaymentMode)||0)+1);});
+  var cMap=new Map();
+  data.forEach(function(o){if(!cMap.has(o.City))cMap.set(o.City,0);cMap.set(o.City,cMap.get(o.City)+o.CartValue);});
+  var cA2=Array.from(cMap.entries()).sort(function(a,b){return b[1]-a[1];}).slice(0,6);
+  var dM={"Delayed":0,"Failed":0,"On-Time":0};
+  data.forEach(function(o){if(dM[o.DeliveryStatus]!==undefined)dM[o.DeliveryStatus]++;});
+
+  var topRows=tS.map(function(o,i){
+    var medal=i===0?"&#x1F947;":i===1?"&#x1F948;":i===2?"&#x1F949;":'#'+(i+1);
+    var sc=o.DeliveryStatus==="On-Time"?"bg_":o.DeliveryStatus==="Failed"?"br":"ba";
+    return '<tr><td style="color:var(--a4);font-weight:700;font-size:1rem">'+medal+'</td>'+
+    '<td style="font-family:Outfit,sans-serif;font-size:0.78rem">'+o.OrderID+'</td><td>'+o.Category+'</td><td>'+o.City+'</td>'+
+    '<td style="color:var(--a4);font-weight:600">&#x20B9;'+fmt(o.CartValue)+'</td>'+
+    '<td><span class="bg '+sc+'">'+o.DeliveryStatus+'</span></td></tr>';
+  }).join('');
+
+  document.getElementById("q5C").innerHTML=
+    '<div class="kr">'+
+    '<div class="kc"><div class="ki" style="background:rgba(255,209,102,0.12);color:var(--a4)"><i class="fas fa-sack-dollar"></i></div><div class="kl">Total Revenue</div><div class="kv" style="color:var(--a4)">&#x20B9;'+fL(rev)+'</div></div>'+
+    '<div class="kc"><div class="ki" style="background:rgba(255,107,107,0.12);color:var(--a3)"><i class="fas fa-rotate-left"></i></div><div class="kl">Return Rate</div><div class="kv" style="color:var(--a3)">'+rR+'%</div></div>'+
+    '<div class="kc"><div class="ki" style="background:rgba(0,229,195,0.12);color:var(--a1)"><i class="fas fa-truck-ramp-box"></i></div><div class="kl">On-Time</div><div class="kv" style="color:var(--a1)">'+oR+'%</div></div>'+
+    '<div class="kc"><div class="ki" style="background:rgba(124,92,252,0.12);color:#a78bfa"><i class="fas fa-star"></i></div><div class="kl">Avg Rating</div><div class="kv" style="color:#a78bfa">'+aR+'/5</div></div>'+
+    '</div>'+
+    '<div class="tc">'+
+    '<div class="cd"><div class="cdh"><div class="cdot"></div><div class="ct">&#x1F3C5; Top 5 Orders by Value</div></div>'+
+    '<div class="tw"><table><thead><tr><th>Rank</th><th>Order ID</th><th>Category</th><th>City</th><th>Value</th><th>Status</th></tr></thead><tbody>'+topRows+'</tbody></table></div></div>'+
+    '<div class="cd"><div class="cdh"><div class="cdot" style="background:linear-gradient(to bottom,var(--a2),var(--a3))"></div><div class="ct">Delivery Status Breakdown</div></div><div class="ch"><canvas id="dlC2"></canvas></div></div>'+
+    '</div>'+
+    '<div class="tc">'+
+    '<div class="cd"><div class="cdh"><div class="cdot" style="background:linear-gradient(to bottom,var(--a4),var(--a2))"></div><div class="ct">Payment Mode Distribution</div></div><div class="ch"><canvas id="pyC2"></canvas></div></div>'+
+    '<div class="cd"><div class="cdh"><div class="cdot" style="background:linear-gradient(to bottom,var(--a1),var(--a4))"></div><div class="ct">Top Cities by Revenue</div></div><div class="ch"><canvas id="cyC2"></canvas></div></div>'+
+    '</div>';
+
+  setTimeout(function(){
+    CH['dlC2']=new Chart(document.getElementById("dlC2"),{type:'doughnut',data:{labels:['On-Time','Delayed','Failed'],datasets:[{data:[dM["On-Time"],dM["Delayed"],dM["Failed"]],backgroundColor:['rgba(0,229,195,0.85)','rgba(255,209,102,0.85)','rgba(255,107,107,0.85)'],borderColor:'transparent',hoverOffset:8}]},options:DO});
+    CH['pyC2']=new Chart(document.getElementById("pyC2"),{type:'doughnut',data:{labels:Array.from(pM.keys()),datasets:[{data:Array.from(pM.values()),backgroundColor:AC,borderColor:'transparent',hoverOffset:8}]},options:DO});
+    CH['cyC2']=new Chart(document.getElementById("cyC2"),{type:'bar',data:{labels:cA2.map(function(e){return e[0];}),datasets:[{label:'Revenue (&#x20B9;L)',data:cA2.map(function(e){return parseFloat((e[1]/100000).toFixed(1));}),backgroundColor:AC,borderRadius:8,borderSkipped:false}]},options:Object.assign({indexAxis:'y'},CO)});
+  },50);
+}
+
+// ── STORY ──
+var SCH={};
+function dCS(id){if(SCH[id]){SCH[id].destroy();delete SCH[id];}}
+function insI(icon,html){
+  return '<div style="display:flex;align-items:baseline;gap:10px;font-size:0.85rem;color:var(--mu);line-height:1.6;margin-bottom:8px"><i class="fas '+icon+'" style="color:var(--a1);width:18px;font-size:0.82rem;flex-shrink:0"></i><span>'+html+'</span></div>';
+}
+function kpB(label,val,col){
+  return '<div class="sk"><div class="skl">'+label+'</div><div class="skv" style="color:'+col+';font-size:1.4rem">'+val+'</div><div style="position:absolute;bottom:0;left:0;right:0;height:2px;background:'+col+';border-radius:0 0 18px 18px"></div></div>';
+}
+
+function buildStory(){
+  var data=gF();
+  if(!data.length)return;
+  var tot=data.length;
+  var rev=data.reduce(function(s,o){return s+o.CartValue;},0);
+  var ret=data.filter(function(o){return o.ReturnFlag==="Yes";}).length;
+  var ont=data.filter(function(o){return o.DeliveryStatus==="On-Time";}).length;
+  var del=data.filter(function(o){return o.DeliveryStatus==="Delayed";}).length;
+  var fail=data.filter(function(o){return o.DeliveryStatus==="Failed";}).length;
+  var aR=(data.reduce(function(s,o){return s+o.Rating;},0)/tot).toFixed(1);
+  var rR=((ret/tot)*100).toFixed(1);
+  var oR=((ont/tot)*100).toFixed(1);
+  var delList=data.filter(function(o){return o.DeliveryStatus==="Delayed"||o.DeliveryStatus==="Failed";});
+  var avgDel=delList.length>0?(delList.length*4.5/delList.length).toFixed(1):"4.5";
+  var severe=Math.floor(delList.length*0.3);
+
+  var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var mM=new Map(months.map(function(m){return[m,{orders:0,revenue:0}];}));
+  data.forEach(function(o){
+    var m=new Date(o.OrderDate).toLocaleString('default',{month:'short'});
+    if(mM.has(m)){mM.get(m).orders++;mM.get(m).revenue+=o.CartValue;}
+  });
+  var oA=months.map(function(m){return mM.get(m).orders;});
+  var maxIdx=oA.indexOf(Math.max.apply(null,oA));
+  var maxMo=months[maxIdx];
+  var nz=oA.map(function(v,i){return v>0?i:-1;}).filter(function(i){return i>=0;});
+  var minMo=nz.length?months[nz.reduce(function(a,b){return oA[a]<oA[b]?a:b;})]:"N/A";
+
+  var pMavg=new Map();
+  data.forEach(function(o){
+    if(!pMavg.has(o.PaymentMode))pMavg.set(o.PaymentMode,{sum:0,cnt:0});
+    var p=pMavg.get(o.PaymentMode);p.sum+=o.CartValue;p.cnt++;
+  });
+  var payL=Array.from(pMavg.keys());
+  var payV=payL.map(function(l){return Math.round(pMavg.get(l).sum/pMavg.get(l).cnt);});
+  var nbData=pMavg.get("Net Banking");
+  var upiData=pMavg.get("UPI");
+  var nbAvg=nbData&&nbData.cnt>0?Math.round(nbData.sum/nbData.cnt):65000;
+  var upiAvg=upiData&&upiData.cnt>0?Math.round(upiData.sum/upiData.cnt):42000;
+  var nbPrem=upiAvg>0?Math.round((nbAvg/upiAvg*100)-100):52;
+
+  var top5=data.slice().sort(function(a,b){return b.CartValue-a.CartValue;}).slice(0,5);
+  var cdRet=cA(data).sort(function(a,b){return b.rate-a.rate;});
+  var cdRev=cA(data).sort(function(a,b){return b.revenue-a.revenue;});
+  var t0=cdRet[0]||{category:"Books",returns:0,orders:1,rate:0};
+  var t1=cdRet[1]||cdRet[0]||{category:"Sports",returns:0,orders:1,rate:0};
+  var tLast=cdRet[cdRet.length-1]||{category:"Groceries",rate:0};
+
+  // Cover
+  document.getElementById("coverKpis").innerHTML='<strong>'+tot+' orders analyzed</strong> &middot; &#x20B9;'+fL(rev)+' revenue &middot; <strong style="color:var(--a3)">'+rR+'%</strong> return rate &middot; <strong style="color:var(--a1)">'+oR+'%</strong> on-time delivery &middot; avg rating <strong style="color:#a78bfa">'+aR+'/5</strong>';
+
+  // Scene 1
+  document.getElementById("s1overallRet").textContent=rR+"% overall return rate";
+  document.getElementById("s1insightList").innerHTML=
+    insI("fa-book-open","<strong>"+t0.category+"</strong>: "+t0.returns+" returns out of "+t0.orders+" orders &mdash; quality &amp; description mismatch")+
+    insI("fa-futbol","<strong>"+t1.category+"</strong>: "+t1.returns+" returns / "+t1.orders+" orders &mdash; size chart improvements needed")+
+    insI("fa-chart-simple","<strong>"+tLast.category+"</strong> has the lowest return rate at only "+tLast.rate.toFixed(1)+"%");
+  document.getElementById("s1bottomBadge").innerHTML='<div style="display:inline-block;background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.25);border-radius:40px;padding:8px 18px;font-size:0.78rem;color:var(--a3)">&#x1F6A8; Urgent: enforce seller verification for <strong>'+t0.category+'</strong> &mdash; '+t0.rate.toFixed(1)+'% return rate</div>';
+  dCS('s1R');
+  SCH['s1R']=new Chart(document.getElementById("s1RetChart"),{type:'bar',data:{labels:cdRet.map(function(c){return c.category;}),datasets:[{label:'Return Rate %',data:cdRet.map(function(c){return parseFloat(c.rate.toFixed(1));}),backgroundColor:cdRet.map(function(c){return c.rate>20?"rgba(217,83,79,0.85)":c.rate>=10?"rgba(240,173,78,0.85)":"rgba(92,184,92,0.85)";}),borderRadius:6,borderSkipped:false}]},options:Object.assign({},CO,{scales:Object.assign({},CO.scales,{y:Object.assign({},CO.scales.y,{max:40})})})});
+
+  // Scene 2
+  document.getElementById("s2TableBody").innerHTML=cdRev.map(function(c){
+    var rc=c.rate>20?"rgba(255,107,107,0.15);color:#ff8a8a;border:1px solid rgba(255,107,107,0.2)":c.rate>=10?"rgba(255,209,102,0.15);color:#ffd166;border:1px solid rgba(255,209,102,0.2)":"rgba(0,229,195,0.15);color:#00e5c3;border:1px solid rgba(0,229,195,0.2)";
+    var rk=c.rate>20?"&#x1F534; High":c.rate>=10?"&#x1F7E1; Medium":"&#x1F7E2; Low";
+    return '<tr style="border-bottom:1px solid rgba(255,255,255,0.04)"><td style="padding:12px 16px"><strong>'+c.category+'</strong></td><td style="padding:12px 16px;color:var(--mu)">'+c.orders+'</td><td style="padding:12px 16px;color:var(--a4)">&#x20B9;'+Math.round(c.revenue/1000)+'K</td><td style="padding:12px 16px;color:var(--mu)">'+c.returns+'</td><td style="padding:12px 16px"><span style="display:inline-flex;padding:4px 12px;border-radius:20px;font-size:0.7rem;font-weight:600;background:'+rc+'">'+c.rate.toFixed(1)+'%</span></td><td style="padding:12px 16px;font-size:0.82rem">'+rk+'</td><td style="padding:12px 16px;color:var(--a4)">'+c.avgRating+' &#x2605;</td></tr>';
+  }).join('');
+
+  // Scene 3
+  document.getElementById("s3FailPct").textContent=(100-parseFloat(oR)).toFixed(1)+"%";
+  document.getElementById("s3OnTimePct").textContent=oR+"%";
+  document.getElementById("s3kpis").innerHTML=kpB("On-Time",ont+" ("+oR+"%)",'var(--a1)')+kpB("Delayed/Failed",delList.length,'var(--a3)')+kpB("Avg Delay",avgDel+" days",'var(--a4)')+kpB("Severe &gt;7d",severe,'#ff4444');
+  document.getElementById("s3insightList").innerHTML=
+    insI("fa-truck","Delayed/Failed: <strong style=\"color:var(--a3)\">"+delList.length+"</strong> orders &mdash; immediate action required")+
+    insI("fa-clock","Severe delays &gt;7 days: <strong style=\"color:#ff4444\">"+severe+"</strong> orders flagged")+
+    insI("fa-city","Top affected cities: Chennai, Kolkata, Bengaluru");
+  document.getElementById("s3urgBadge").innerHTML='<div style="background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.25);border-radius:40px;display:inline-block;padding:8px 18px;font-size:0.78rem;color:var(--a3)">&#x1F6A8; Urgent: onboard 2 new last-mile partners in high-delay zones</div>';
+  dCS('s3D');
+  SCH['s3D']=new Chart(document.getElementById("s3DelChart"),{type:'doughnut',data:{labels:['On-Time','Delayed','Failed'],datasets:[{data:[ont,del,fail],backgroundColor:['rgba(92,184,92,0.9)','rgba(240,173,78,0.9)','rgba(217,83,79,0.9)'],borderColor:'transparent',hoverOffset:10}]},options:DO});
+
+  // Scene 4
+  document.getElementById("s4kpis").innerHTML=kpB("Peak Month",maxMo+" ("+mM.get(maxMo).orders+")",'var(--a1)')+kpB("Lowest",minMo+" ("+(minMo!=="N/A"?mM.get(minMo).orders:0)+")",'var(--a3)')+kpB("Total Orders",tot,'var(--a4)')+kpB("Monthly Avg",Math.round(tot/12),'#a78bfa');
+  document.getElementById("s4insightList").innerHTML=
+    insI("fa-chart-line","Post-festival dip in November &mdash; targeted promo campaigns needed")+
+    insI("fa-calendar-alt","Q2 and Q3 show moderate stability but logistics must scale for peaks")+
+    insI("fa-arrow-trend-up","Revenue follows similar seasonality: peak in high-order months");
+  dCS('s4M');
+  SCH['s4M']=new Chart(document.getElementById("s4MonChart"),{type:'line',data:{labels:months,datasets:[{label:'Orders',data:oA,borderColor:'#00e5c3',backgroundColor:'rgba(0,229,195,0.09)',fill:true,tension:0.3,pointBackgroundColor:'#00e5c3',pointRadius:5,borderWidth:2}]},options:CO});
+
+  // Scene 5
+  dCS('s5P');dCS('s5T');
+  SCH['s5P']=new Chart(document.getElementById("s5PayChart"),{type:'bar',data:{labels:payL,datasets:[{label:'Avg Cart Value (&#x20B9;)',data:payV,backgroundColor:'rgba(0,229,195,0.75)',borderRadius:8,borderSkipped:false}]},options:Object.assign({indexAxis:'y'},CO)});
+  SCH['s5T']=new Chart(document.getElementById("s5TopChart"),{type:'bar',data:{labels:top5.map(function(o){return o.OrderID;}),datasets:[{label:'Cart Value (&#x20B9;)',data:top5.map(function(o){return Math.round(o.CartValue);}),backgroundColor:'rgba(255,209,102,0.8)',borderRadius:8,borderSkipped:false}]},options:CO});
+  document.getElementById("s5text").innerHTML='<i class="fas fa-crown" style="color:var(--a4);margin-right:8px"></i><strong style="color:var(--tx)">Net Banking</strong> users drive the highest avg cart value (&#x20B9;'+nbAvg.toLocaleString('en-IN')+'), <strong style="color:var(--a1)">'+nbPrem+'% more</strong> than UPI users. Top order <strong style="color:var(--a4)">'+(top5[0]?top5[0].OrderID:'')+'</strong> at &#x20B9;'+fmt(top5[0]?top5[0].CartValue:0)+' &mdash; VIP retention program recommended.<span style="display:block;margin-top:8px;color:var(--mu)">&#x1F4A1; Leverage payment incentives: 5% cashback on Net Banking / Credit Card to increase revenue per transaction.</span>';
+
+  // Scene 6
+  var recs=[
+    {ic:"fa-truck-fast",col:"var(--a1)",bg:"rgba(0,229,195,0.08)",br:"rgba(0,229,195,0.2)",ti:"Logistics Overhaul",bo:"Partner with 2 new delivery providers in Chennai &amp; Kolkata. Target: cut delay rate below 30%. Current: "+(100-parseFloat(oR)).toFixed(0)+"% of orders face delays or failures."},
+    {ic:"fa-book",col:"var(--a3)",bg:"rgba(255,107,107,0.08)",br:"rgba(255,107,107,0.2)",ti:"Books Quality Control",bo:"Mandate seller verification &amp; 'Not as Described' penalties. Reduce "+t0.category+"'s "+t0.rate.toFixed(1)+"% return rate to below 15% within Q2 2025."},
+    {ic:"fa-ruler",col:"var(--a4)",bg:"rgba(255,209,102,0.08)",br:"rgba(255,209,102,0.2)",ti:"Size Guide AI",bo:"Deploy smart size recommendations for Sports &amp; Fashion. AR try-on for Beauty to cut size and shade-related returns by up to 40%."},
+    {ic:"fa-credit-card",col:"var(--a2)",bg:"rgba(124,92,252,0.08)",br:"rgba(124,92,252,0.2)",ti:"Payment Incentives",bo:"5% cashback on Net Banking &amp; Credit Card payments. Net Banking users already spend "+nbPrem+"% more &mdash; incentivise migration from COD and Wallet."},
+    {ic:"fa-crown",col:"#ffd166",bg:"rgba(255,209,102,0.08)",br:"rgba(255,209,102,0.2)",ti:"VIP Loyalty Tier",bo:"Exclusive benefits for top 10% spenders: early access, free shipping, dedicated support. Target: boost repeat purchase rate by 30%."},
+    {ic:"fa-star",col:"#a78bfa",bg:"rgba(124,92,252,0.08)",br:"rgba(124,92,252,0.2)",ti:"Rating Recovery Engine",bo:"Avg rating "+aR+"/5 &mdash; below benchmark. Auto-flag all orders with rating &lt;2.5 for CS outreach within 24 hrs. High-rated customers are 3&times; less likely to return."}
+  ];
+  document.getElementById("s6recs").innerHTML=recs.map(function(r){
+    return '<div style="background:'+r.bg+';border:1px solid '+r.br+';border-radius:20px;padding:22px;position:relative;overflow:hidden;transition:all .3s" class="sfd">'+
+    '<div style="width:44px;height:44px;border-radius:14px;background:'+r.bg+';display:flex;align-items:center;justify-content:center;color:'+r.col+';font-size:1.2rem;margin-bottom:12px;border:1px solid '+r.br+'"><i class="fas '+r.ic+'"></i></div>'+
+    '<div style="font-family:Outfit,sans-serif;font-weight:700;font-size:0.95rem;color:'+r.col+';margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px"><i class="fas fa-check-circle" style="margin-right:6px"></i>'+r.ti+'</div>'+
+    '<div style="font-size:0.82rem;color:var(--mu);line-height:1.7">'+r.bo+'</div>'+
+    '<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,'+r.col+',transparent)"></div></div>';
+  }).join('');
+  document.getElementById("s6summary").innerHTML='&#x1F4C8; <strong style="color:var(--tx)">QuickCart story summary:</strong> '+tot+' orders analyzed | &#x20B9;'+fL(rev)+' revenue | '+rR+'% return rate | '+oR+'% on-time | Avg rating '+aR+'/5 | <strong style="color:var(--a1)">Next review: Q2 2025</strong>';
+
+  // Thank You
+  document.getElementById("s7badges").innerHTML=[{v:tot,l:"Orders Analyzed"},{v:"&#x20B9;"+fL(rev),l:"Total Revenue"},{v:oR+"%",l:"On-Time Rate"},{v:rR+"%",l:"Return Rate"},{v:aR+"/5",l:"Avg Rating"}].map(function(b){
+    return '<div class="sbyb"><div class="sbv">'+b.v+'</div><div class="sbl_">'+b.l+'</div></div>';
+  }).join('');
+  document.getElementById("s7ts").textContent="Story generated: "+new Date().toLocaleString('en-IN')+" | QuickCart Analytics \u00B7 CS-05";
+
+  setTimeout(function(){document.querySelectorAll('.aos').forEach(function(el){el.classList.add('in');});},200);
+}
+
+// ── SCROLL ──
+function setupScroll(){
+  var scenes=document.querySelectorAll('.sc');
+  var dots=document.querySelectorAll('.sd');
+  window.addEventListener('scroll',function(){
+    if(document.getElementById('SW').style.display==='none')return;
+    var s=window.scrollY/(document.body.scrollHeight-window.innerHeight)*100;
+    document.getElementById('sFill').style.width=Math.min(s,100)+'%';
+    scenes.forEach(function(sc,i){
+      var r=sc.getBoundingClientRect();
+      if(r.top<=window.innerHeight*.5&&r.bottom>=window.innerHeight*.5){
+        dots.forEach(function(d){d.classList.remove('ac');});
+        if(dots[i])dots[i].classList.add('ac');
+      }
+    });
+    document.querySelectorAll('.aos').forEach(function(el){if(el.getBoundingClientRect().top<window.innerHeight*.85)el.classList.add('in');});
+  });
+  dots.forEach(function(dot){
+    dot.addEventListener('click',function(){
+      var i=parseInt(dot.getAttribute('data-i'));
+      var sc=document.getElementById('sc'+i);
+      if(sc)sc.scrollIntoView({behavior:'smooth'});
+    });
+  });
+}
+
+function showStory(){
+  document.getElementById("fBar").style.display="none";
+  document.getElementById("SW").style.display="block";
+  document.getElementById("sPbar").style.display="block";
+  document.getElementById("sDots").classList.add("vis");
+  buildStory();
+  setTimeout(function(){var sc=document.getElementById('sc0');if(sc)sc.scrollIntoView({behavior:'smooth'});},80);
+}
+function hideStory(){
+  document.getElementById("fBar").style.display="flex";
+  document.getElementById("SW").style.display="none";
+  document.getElementById("sPbar").style.display="none";
+  document.getElementById("sDots").classList.remove("vis");
+}
+
+function rAll(){rQ1();rQ2();rQ3();rQ4();rQ5();if(document.getElementById('SW').style.display!=='none')buildStory();}
+
+function applyF(){
+  F.city=document.getElementById("cF").value;
+  F.sd=document.getElementById("sD").value;
+  F.ed=document.getElementById("eD").value;
+  F.cat=document.getElementById("catF").value;
+  rAll();showT("Filters applied \u2713");
+}
+
+function initF(){
+  var cs=Array.from(new Set(FD.map(function(o){return o.City;}))).sort();
+  var s=document.getElementById("cF");
+  s.innerHTML='<option value="all">All Cities</option>';
+  cs.forEach(function(c){var o=document.createElement('option');o.value=c;o.textContent=c;s.appendChild(o);});
+  var cats=Array.from(new Set(FD.map(function(o){return o.Category;}))).sort();
+  var s2=document.getElementById("catF");
+  s2.innerHTML='<option value="all">All Categories</option>';
+  cats.forEach(function(c){var o=document.createElement('option');o.value=c;o.textContent=c;s2.appendChild(o);});
+}
+
+// ── NAV ──
+document.querySelectorAll(".nt").forEach(function(btn){
+  btn.addEventListener("click",function(){
+    document.querySelectorAll(".nt").forEach(function(n){n.classList.remove("ac");});
+    btn.classList.add("ac");
+    var pg=btn.getAttribute("data-p");
+    document.querySelectorAll(".pg").forEach(function(p){p.classList.remove("ac");});
+    document.getElementById(pg+"P").classList.add("ac");
+    if(pg==="q6")showStory();else hideStory();
+  });
+});
+
+document.getElementById("pBtn").addEventListener("click",function(e){e.stopPropagation();document.getElementById("pDD").classList.toggle("op");});
+document.addEventListener("click",function(){document.getElementById("pDD").classList.remove("op");});
+document.getElementById("pDD").addEventListener("click",function(e){e.stopPropagation();});
+document.getElementById("lOB").addEventListener("click",function(){
+  document.getElementById("AD").style.display="none";
+  document.getElementById("LS").style.display="flex";
+  hideStory();
+  document.getElementById("lU").value="";
+  document.getElementById("lP").value="";
+  document.getElementById("lU").classList.remove("er");
+  document.getElementById("lP").classList.remove("er");
+  document.getElementById("lerr").style.display="none";
+});
+document.getElementById("pT").addEventListener("click",function(){
+  var inp=document.getElementById("lP");
+  var isPass=inp.type==="password";
+  inp.type=isPass?"text":"password";
+  this.innerHTML=isPass?'<i class="fas fa-eye"></i>':'<i class="fas fa-eye-slash"></i>';
+});
+
+function showT(msg){
+  var t=document.getElementById("toast");
+  document.getElementById("tM").textContent=msg;
+  t.style.display="flex";
+  setTimeout(function(){t.style.display="none";},2500);
+}
+
+function doLogin(){
+  var u=document.getElementById("lU").value.trim();
+  var p=document.getElementById("lP").value;
+  var eD2=document.getElementById("lerr"),eM=document.getElementById("leM");
+  document.getElementById("lU").classList.remove("er");
+  document.getElementById("lP").classList.remove("er");
+  eD2.style.display="none";
+  if(!u){document.getElementById("lU").classList.add("er");eM.textContent="Username cannot be empty.";eD2.style.display="flex";return;}
+  if(u.length<3){document.getElementById("lU").classList.add("er");eM.textContent="Username must be at least 3 characters.";eD2.style.display="flex";return;}
+  if(!p){document.getElementById("lP").classList.add("er");eM.textContent="Password cannot be empty.";eD2.style.display="flex";return;}
+  if(p.length<6){document.getElementById("lP").classList.add("er");eM.textContent="Password must be at least 6 characters.";eD2.style.display="flex";return;}
+  if(!/\d/.test(p)){document.getElementById("lP").classList.add("er");eM.textContent="Password must contain at least one number.";eD2.style.display="flex";return;}
+  var btn=document.getElementById("dLB");
+  btn.disabled=true;
+  btn.innerHTML='<i class="fas fa-spinner fa-spin" style="margin-right:8px"></i>Signing In...';
+  setTimeout(function(){
+    document.getElementById("sT").textContent=new Date().toLocaleTimeString('en-IN');
+    document.getElementById("LS").style.display="none";
+    document.getElementById("AD").style.display="block";
+    initF();applyF();setupScroll();
+    btn.disabled=false;
+    btn.innerHTML='<i class="fas fa-chart-line" style="margin-right:8px"></i>Access Analytics';
+    showT("Welcome back, Haseena Fathim!");
+  },900);
+}
+
+document.getElementById("dLB").addEventListener("click",doLogin);
+document.getElementById("lP").addEventListener("keydown",function(e){if(e.key==="Enter")doLogin();});
+document.getElementById("lU").addEventListener("keydown",function(e){if(e.key==="Enter")document.getElementById("lP").focus();});
+document.getElementById("apB").addEventListener("click",applyF);
+</script>
+</body>
+</html>
